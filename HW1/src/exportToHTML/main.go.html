@@ -1,0 +1,372 @@
+<html>
+<head>
+<title>main.go</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,0); }
+.s1 { color: rgb(0,0,128); font-weight: bold; }
+.s2 { color: rgb(0,0,0); }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(128,128,128); font-style: italic; }
+.s5 { color: rgb(0,0,255); }
+.s6 { color: rgb(0,0,0); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+main.go</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0"> 
+</span><span class="s1">package </span><span class="s2">main</span><span class="s0"> 
+ 
+</span><span class="s1">import </span><span class="s0">( 
+    </span><span class="s3">&quot;os&quot;</span><span class="s0"> 
+    </span><span class="s3">&quot;bufio&quot;</span><span class="s0"> 
+    </span><span class="s2">s </span><span class="s3">&quot;strings&quot;</span><span class="s0"> 
+    </span><span class="s3">&quot;github.com/google/btree&quot;</span><span class="s0"> 
+    </span><span class="s3">&quot;fmt&quot;</span><span class="s0"> 
+    </span><span class="s3">&quot;strconv&quot;</span><span class="s0"> 
+) 
+</span><span class="s4">//declare global tree creation</span><span class="s0"> 
+</span><span class="s1">var </span><span class="s2">list </span><span class="s0">= </span><span class="s2">btree</span><span class="s0">.</span><span class="s2">NewFreeList</span><span class="s0">(</span><span class="s5">32</span><span class="s0">) 
+</span><span class="s1">var </span><span class="s2">tree </span><span class="s0">= </span><span class="s2">btree</span><span class="s0">.</span><span class="s2">NewWithFreeList</span><span class="s0">(</span><span class="s5">2</span><span class="s0">,</span><span class="s2">list</span><span class="s0">) 
+</span><span class="s1">var </span><span class="s2">docID </span><span class="s0">= </span><span class="s5">0</span><span class="s0"> 
+</span><span class="s1">var </span><span class="s2">docArray </span><span class="s0">[]</span><span class="s2">string</span><span class="s0"> 
+</span><span class="s1">var </span><span class="s2">docToFind int</span><span class="s0"> 
+</span><span class="s1">func </span><span class="s2">main</span><span class="s0">() { 
+    </span><span class="s1">var </span><span class="s2">file string</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">temp string</span><span class="s0"> 
+    </span><span class="s2">reader </span><span class="s0">:= </span><span class="s2">bufio</span><span class="s0">.</span><span class="s2">NewReader</span><span class="s0">(</span><span class="s2">os</span><span class="s0">.</span><span class="s2">Stdin</span><span class="s0">) 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Print</span><span class="s0">(</span><span class="s3">&quot;Enter full filepath to text document to read: &quot;</span><span class="s0">) 
+    </span><span class="s2">file</span><span class="s0">, </span><span class="s2">_ </span><span class="s0">= </span><span class="s2">reader</span><span class="s0">.</span><span class="s2">ReadString</span><span class="s0">(</span><span class="s3">'\n'</span><span class="s0">) 
+    </span><span class="s2">file </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">file</span><span class="s0">, </span><span class="s3">&quot;\n&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">, -</span><span class="s5">1</span><span class="s0">) 
+ 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Print</span><span class="s0">(</span><span class="s3">&quot;Enter document ID to look up: &quot;</span><span class="s0">) 
+    </span><span class="s2">temp</span><span class="s0">, </span><span class="s2">_ </span><span class="s0">= </span><span class="s2">reader</span><span class="s0">.</span><span class="s2">ReadString</span><span class="s0">(</span><span class="s3">'\n'</span><span class="s0">) 
+    </span><span class="s2">temp </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">temp</span><span class="s0">, </span><span class="s3">&quot;\n&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">, -</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">docToFind</span><span class="s0">, </span><span class="s2">_ </span><span class="s0">= </span><span class="s2">strconv</span><span class="s0">.</span><span class="s2">Atoi</span><span class="s0">(</span><span class="s2">temp</span><span class="s0">) 
+ 
+    </span><span class="s4">// import in file into an array</span><span class="s0"> 
+    </span><span class="s2">collectionFrequencyMap </span><span class="s0">:= </span><span class="s2">make</span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">]</span><span class="s2">int</span><span class="s0">) 
+    </span><span class="s2">documentFrequencyMap </span><span class="s0">:= </span><span class="s2">make</span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">][]</span><span class="s2">int</span><span class="s0">) 
+    </span><span class="s2">FileToLines</span><span class="s0">(</span><span class="s2">file</span><span class="s0">, </span><span class="s2">collectionFrequencyMap</span><span class="s0">, </span><span class="s2">documentFrequencyMap</span><span class="s0">) 
+ 
+    </span><span class="s4">//create reverse tree</span><span class="s0"> 
+    </span><span class="s2">revCFMap </span><span class="s0">:= </span><span class="s2">make</span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">btree</span><span class="s0">.</span><span class="s2">Item</span><span class="s0">][]</span><span class="s2">string</span><span class="s0">) 
+    </span><span class="s2">createReverseMap</span><span class="s0">(</span><span class="s2">collectionFrequencyMap</span><span class="s0">, </span><span class="s2">revCFMap</span><span class="s0">) 
+ 
+    </span><span class="s4">//fill in binary tree</span><span class="s0"> 
+    </span><span class="s2">updateTree</span><span class="s0">(</span><span class="s2">revCFMap</span><span class="s0">) 
+ 
+    </span><span class="s4">//get top 5 occurences</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top100 </span><span class="s0">[</span><span class="s5">100</span><span class="s0">]</span><span class="s2">string</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top100CF </span><span class="s0">[</span><span class="s5">100</span><span class="s0">]</span><span class="s2">int</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top100DF </span><span class="s0">[</span><span class="s5">100</span><span class="s0">][]</span><span class="s2">int</span><span class="s0"> 
+ 
+    </span><span class="s4">//top 500th</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top500 string</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top500CF int</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top500DF </span><span class="s0">[]</span><span class="s2">int</span><span class="s0"> 
+ 
+    </span><span class="s2">k </span><span class="s0">:= </span><span class="s5">0</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Len</span><span class="s0">() &gt; </span><span class="s5">0 </span><span class="s0">{ 
+        </span><span class="s2">output </span><span class="s0">:= </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Max</span><span class="s0">() 
+        </span><span class="s2">strOutput </span><span class="s0">:= </span><span class="s2">revCFMap</span><span class="s0">[</span><span class="s2">output</span><span class="s0">] 
+        </span><span class="s1">for </span><span class="s2">j</span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">strOutput</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+            </span><span class="s2">top100</span><span class="s0">[</span><span class="s2">k</span><span class="s0">] = </span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">] 
+            </span><span class="s2">top100CF</span><span class="s0">[</span><span class="s2">k</span><span class="s0">] = </span><span class="s2">collectionFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+            </span><span class="s2">top100DF</span><span class="s0">[</span><span class="s2">k</span><span class="s0">] = </span><span class="s2">documentFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+            </span><span class="s2">k</span><span class="s0">++ 
+            </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">100 </span><span class="s0">{ 
+                </span><span class="s1">break</span><span class="s0"> 
+            } 
+        } 
+        </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">100 </span><span class="s0">{ 
+            </span><span class="s1">break</span><span class="s0"> 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Delete</span><span class="s0">(</span><span class="s2">output</span><span class="s0">) 
+        } 
+    } 
+ 
+    </span><span class="s4">//Report the Number of Paragraphs processed</span><span class="s0"> 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println </span><span class="s0">(</span><span class="s3">&quot;Number of documents processed: &quot; </span><span class="s0">, </span><span class="s2">docID</span><span class="s0">) 
+     
+    </span><span class="s4">//Report the Number of of unique words processed</span><span class="s0"> 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;Number of of unique words processed: &quot;</span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">collectionFrequencyMap</span><span class="s0">)) 
+ 
+    </span><span class="s4">//Report the Number of total words encountered</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">wordTotal int </span><span class="s0">= </span><span class="s5">0</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">_</span><span class="s0">, </span><span class="s2">valueContent </span><span class="s0">:= </span><span class="s1">range </span><span class="s2">collectionFrequencyMap</span><span class="s0">{ 
+        </span><span class="s2">wordTotal </span><span class="s0">= </span><span class="s2">wordTotal </span><span class="s0">+ </span><span class="s2">valueContent</span><span class="s0"> 
+    } 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;Number of of total words processed: &quot;</span><span class="s0">, </span><span class="s2">wordTotal</span><span class="s0">) 
+ 
+    </span><span class="s4">//Identify the 100 most frequent words (by total count, also known as collection frequency)</span><span class="s0"> 
+    </span><span class="s4">// and report both the collection frequency and the document frequency for each.</span><span class="s0"> 
+    </span><span class="s4">// Order them from most frequent to least.</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">i</span><span class="s0">:=</span><span class="s5">0 </span><span class="s0">; </span><span class="s2">i </span><span class="s0">&lt; </span><span class="s5">100 </span><span class="s0">; </span><span class="s2">i</span><span class="s0">++ { 
+        </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;#&quot; </span><span class="s0">, </span><span class="s2">i</span><span class="s0">+</span><span class="s5">1 </span><span class="s0">, </span><span class="s3">&quot;: &quot;</span><span class="s0">, </span><span class="s2">top100</span><span class="s0">[</span><span class="s2">i</span><span class="s0">] , </span><span class="s3">&quot;\t collection frequency:&quot; </span><span class="s0">, </span><span class="s2">top100CF</span><span class="s0">[</span><span class="s2">i</span><span class="s0">] , </span><span class="s3">&quot; \t document frequency:&quot; </span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">top100DF</span><span class="s0">[</span><span class="s2">i</span><span class="s0">])) 
+    } 
+ 
+ 
+    </span><span class="s4">//500th most frequent word</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Len</span><span class="s0">() &gt; </span><span class="s5">0 </span><span class="s0">{ 
+ 
+        </span><span class="s2">output </span><span class="s0">:= </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Max</span><span class="s0">() 
+        </span><span class="s2">strOutput </span><span class="s0">:= </span><span class="s2">revCFMap</span><span class="s0">[</span><span class="s2">output</span><span class="s0">] 
+        </span><span class="s1">for </span><span class="s2">j</span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">strOutput</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+            </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">500 </span><span class="s0">{ 
+ 
+                </span><span class="s2">top500 </span><span class="s0">= </span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">] 
+                </span><span class="s2">top500CF </span><span class="s0">= </span><span class="s2">collectionFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s2">top500DF </span><span class="s0">= </span><span class="s2">documentFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s4">//fmt.Println(tree.Len(), &quot;  &quot; , k)</span><span class="s0"> 
+                </span><span class="s2">k</span><span class="s0">++ 
+                </span><span class="s1">break</span><span class="s0"> 
+            }</span><span class="s1">else </span><span class="s0">{ 
+                </span><span class="s2">k</span><span class="s0">++ 
+            } 
+ 
+        } 
+        </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">501 </span><span class="s0">{ 
+            </span><span class="s1">break</span><span class="s0"> 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Delete</span><span class="s0">(</span><span class="s2">output</span><span class="s0">) 
+        } 
+ 
+    } 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;#500 : &quot;</span><span class="s0">, </span><span class="s2">top500 </span><span class="s0">, </span><span class="s3">&quot;\t collection frequency:&quot; </span><span class="s0">, </span><span class="s2">top500CF </span><span class="s0">, </span><span class="s3">&quot; \t document frequency:&quot; </span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">top500DF</span><span class="s0">)) 
+ 
+    </span><span class="s4">//1000th most frequent word</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top1000 string</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top1000CF int</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top1000DF </span><span class="s0">[]</span><span class="s2">int</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Len</span><span class="s0">() &gt; </span><span class="s5">0 </span><span class="s0">{ 
+        </span><span class="s2">output </span><span class="s0">:= </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Max</span><span class="s0">() 
+        </span><span class="s2">strOutput </span><span class="s0">:= </span><span class="s2">revCFMap</span><span class="s0">[</span><span class="s2">output</span><span class="s0">] 
+        </span><span class="s1">for </span><span class="s2">j</span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">strOutput</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+            </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">1000 </span><span class="s0">{ 
+                </span><span class="s2">top1000 </span><span class="s0">= </span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">] 
+                </span><span class="s2">top1000CF </span><span class="s0">= </span><span class="s2">collectionFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s2">top1000DF </span><span class="s0">= </span><span class="s2">documentFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s2">k</span><span class="s0">++ 
+                </span><span class="s1">break</span><span class="s0"> 
+            }</span><span class="s1">else </span><span class="s0">{ 
+                </span><span class="s2">k</span><span class="s0">++ 
+            } 
+ 
+        } 
+        </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">1001 </span><span class="s0">{ 
+            </span><span class="s1">break</span><span class="s0"> 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Delete</span><span class="s0">(</span><span class="s2">output</span><span class="s0">) 
+        } 
+    } 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;#1000 : &quot;</span><span class="s0">, </span><span class="s2">top1000 </span><span class="s0">, </span><span class="s3">&quot;\t collection frequency:&quot; </span><span class="s0">, </span><span class="s2">top1000CF </span><span class="s0">, </span><span class="s3">&quot; \t document frequency:&quot; </span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">top1000DF</span><span class="s0">)) 
+ 
+    </span><span class="s4">//1000th most frequent word</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top5000 string</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top5000CF int</span><span class="s0"> 
+    </span><span class="s1">var </span><span class="s2">top5000DF </span><span class="s0">[]</span><span class="s2">int</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Len</span><span class="s0">() &gt; </span><span class="s5">0 </span><span class="s0">{ 
+        </span><span class="s2">output </span><span class="s0">:= </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Max</span><span class="s0">() 
+        </span><span class="s2">strOutput </span><span class="s0">:= </span><span class="s2">revCFMap</span><span class="s0">[</span><span class="s2">output</span><span class="s0">] 
+        </span><span class="s1">for </span><span class="s2">j</span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">strOutput</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+            </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">5000 </span><span class="s0">{ 
+                </span><span class="s2">top5000 </span><span class="s0">= </span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">] 
+                </span><span class="s2">top5000CF </span><span class="s0">= </span><span class="s2">collectionFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s2">top5000DF </span><span class="s0">= </span><span class="s2">documentFrequencyMap</span><span class="s0">[</span><span class="s2">strOutput</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] 
+                </span><span class="s2">k</span><span class="s0">++ 
+                </span><span class="s1">break</span><span class="s0"> 
+            }</span><span class="s1">else </span><span class="s0">{ 
+                </span><span class="s2">k</span><span class="s0">++ 
+            } 
+ 
+        } 
+        </span><span class="s1">if </span><span class="s2">k </span><span class="s0">== </span><span class="s5">5001 </span><span class="s0">{ 
+            </span><span class="s1">break</span><span class="s0"> 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">Delete</span><span class="s0">(</span><span class="s2">output</span><span class="s0">) 
+        } 
+    } 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">(</span><span class="s3">&quot;#5000 : &quot;</span><span class="s0">, </span><span class="s2">top5000 </span><span class="s0">, </span><span class="s3">&quot;\t collection frequency:&quot; </span><span class="s0">, </span><span class="s2">top5000CF </span><span class="s0">, </span><span class="s3">&quot; \t document frequency:&quot; </span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">top5000DF</span><span class="s0">)) 
+ 
+ 
+    </span><span class="s4">//Report out the number of words that occur in exactly one document</span><span class="s0"> 
+ 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">( </span><span class="s3">&quot;Number of words in document ID (&quot; </span><span class="s0">, </span><span class="s2">docToFind </span><span class="s0">, </span><span class="s3">&quot;) is &quot; </span><span class="s0">, </span><span class="s2">WordsInDoc</span><span class="s0">(</span><span class="s2">docToFind</span><span class="s0">, </span><span class="s2">docArray</span><span class="s0">)) 
+ 
+    </span><span class="s4">//Report out the percentage of dictionary items in a single document which is #uniquewords / #totalwords</span><span class="s0"> 
+    </span><span class="s2">freqNumerator </span><span class="s0">:= </span><span class="s2">UniqueWordsInDoc</span><span class="s0">(</span><span class="s2">docToFind</span><span class="s0">, </span><span class="s2">documentFrequencyMap</span><span class="s0">) 
+    </span><span class="s2">freqDenominator </span><span class="s0">:= </span><span class="s2">WordsInDoc</span><span class="s0">(</span><span class="s2">docToFind</span><span class="s0">, </span><span class="s2">docArray</span><span class="s0">) 
+    </span><span class="s2">fmt</span><span class="s0">.</span><span class="s2">Println</span><span class="s0">( </span><span class="s3">&quot;% of unique words in document ID (&quot; </span><span class="s0">, </span><span class="s2">docToFind</span><span class="s0">, </span><span class="s3">&quot;) is &quot; </span><span class="s0">, (</span><span class="s2">float64</span><span class="s0">(</span><span class="s2">freqNumerator</span><span class="s0">) / </span><span class="s2">float64</span><span class="s0">(</span><span class="s2">freqDenominator</span><span class="s0">))) 
+ 
+ 
+ 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">FileToLines</span><span class="s0">(</span><span class="s2">filePath string</span><span class="s0">, </span><span class="s2">inputCFMap </span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">]</span><span class="s2">int </span><span class="s0">, </span><span class="s2">inputDFMap </span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">][]</span><span class="s2">int</span><span class="s0">)  { 
+ 
+ 
+    </span><span class="s2">f</span><span class="s0">, </span><span class="s2">err </span><span class="s0">:= </span><span class="s2">os</span><span class="s0">.</span><span class="s2">Open</span><span class="s0">(</span><span class="s2">filePath</span><span class="s0">) 
+    </span><span class="s1">if </span><span class="s2">err </span><span class="s0">!= </span><span class="s2">nil </span><span class="s0">{ 
+        </span><span class="s1">return</span><span class="s0"> 
+    } 
+    </span><span class="s1">defer </span><span class="s2">f</span><span class="s0">.</span><span class="s2">Close</span><span class="s0">() 
+    </span><span class="s2">scanner </span><span class="s0">:= </span><span class="s2">bufio</span><span class="s0">.</span><span class="s2">NewScanner</span><span class="s0">(</span><span class="s2">f</span><span class="s0">) 
+    </span><span class="s1">var </span><span class="s2">textContent string</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">scanner</span><span class="s0">.</span><span class="s2">Scan</span><span class="s0">() { 
+        </span><span class="s2">nextLine </span><span class="s0">:= </span><span class="s2">scanner</span><span class="s0">.</span><span class="s2">Text</span><span class="s0">() 
+        </span><span class="s1">if </span><span class="s2">nextLine </span><span class="s0">== </span><span class="s3">&quot;&lt;/P&gt;&quot; </span><span class="s0">{ 
+            </span><span class="s2">docArray </span><span class="s0">= </span><span class="s2">ExtendString</span><span class="s0">(</span><span class="s2">docArray</span><span class="s0">, </span><span class="s2">textContent</span><span class="s0">) 
+            </span><span class="s2">textContent </span><span class="s0">= </span><span class="s3">&quot;&quot;</span><span class="s0"> 
+            </span><span class="s2">docID</span><span class="s0">++ 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s1">if </span><span class="s0">!</span><span class="s2">s</span><span class="s0">.</span><span class="s2">Contains</span><span class="s0">(</span><span class="s2">nextLine</span><span class="s0">, </span><span class="s3">&quot;&lt;P&quot;</span><span class="s0">){ 
+                </span><span class="s2">nextLine </span><span class="s0">= </span><span class="s2">Normalize</span><span class="s0">(</span><span class="s2">nextLine</span><span class="s0">) 
+                </span><span class="s2">nextLine </span><span class="s0">= </span><span class="s2">RemovePunct</span><span class="s0">(</span><span class="s2">nextLine</span><span class="s0">) 
+                </span><span class="s2">textContent </span><span class="s0">= </span><span class="s2">textContent </span><span class="s0">+ </span><span class="s2">nextLine</span><span class="s0"> 
+            } 
+        } 
+    } 
+ 
+    </span><span class="s1">for </span><span class="s2">i </span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">i </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">docArray</span><span class="s0">) ; </span><span class="s2">i</span><span class="s0">++ { 
+        </span><span class="s2">textArray </span><span class="s0">:= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Split</span><span class="s0">(</span><span class="s2">docArray</span><span class="s0">[</span><span class="s2">i</span><span class="s0">],</span><span class="s3">&quot; &quot;</span><span class="s0">) 
+        </span><span class="s4">// create map</span><span class="s0"> 
+        </span><span class="s4">// pass in map + document =&gt; update map -&gt; new .go -&gt; return updated map</span><span class="s0"> 
+        </span><span class="s2">updateCFMap</span><span class="s0">(</span><span class="s2">textArray</span><span class="s0">, </span><span class="s2">inputCFMap</span><span class="s0">) 
+        </span><span class="s2">updateDFMap</span><span class="s0">(</span><span class="s2">i </span><span class="s0">, </span><span class="s2">textArray</span><span class="s0">, </span><span class="s2">inputDFMap</span><span class="s0">) 
+    }} 
+ 
+ 
+</span><span class="s1">func </span><span class="s2">RemovePunct</span><span class="s0">(</span><span class="s2">lineContent string</span><span class="s0">) (</span><span class="s2">cleanedLine string</span><span class="s0">){ 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;.&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;,&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;?&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;;&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;:&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;(&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;)&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;[&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;]&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;{&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;}&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;|&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;\\n&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;- &quot;</span><span class="s0">, </span><span class="s3">&quot; &quot;</span><span class="s0">,-</span><span class="s5">2</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;'s&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">2</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;'ve&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">3</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;'m&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">2</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;'re&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">3</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;'ed&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">3</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;  &quot;</span><span class="s0">, </span><span class="s3">&quot; &quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">lineContent </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;  &quot;</span><span class="s0">, </span><span class="s3">&quot; &quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s2">cleanedLine </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Replace</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">,</span><span class="s3">&quot;!&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s0">,-</span><span class="s5">1</span><span class="s0">) 
+    </span><span class="s1">return</span><span class="s0"> 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">Normalize</span><span class="s0">(</span><span class="s2">lineContent string</span><span class="s0">)(</span><span class="s2">normalizedLine string</span><span class="s0">){ 
+    </span><span class="s2">normalizedLine </span><span class="s0">= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">ToLower</span><span class="s0">(</span><span class="s2">lineContent</span><span class="s0">) 
+    </span><span class="s1">return</span><span class="s0"> 
+} 
+ 
+</span><span class="s4">// check if value exists. if yes -&gt; increment value by 1. if no -&gt; add to map</span><span class="s0"> 
+</span><span class="s1">func </span><span class="s2">updateCFMap</span><span class="s0">(</span><span class="s2">text </span><span class="s0">[]</span><span class="s2">string</span><span class="s0">, </span><span class="s2">wordMap </span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">]</span><span class="s2">int</span><span class="s0">) { 
+    </span><span class="s1">for </span><span class="s2">j </span><span class="s0">:= </span><span class="s5">0</span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">text</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+        </span><span class="s1">if </span><span class="s2">key</span><span class="s0">, </span><span class="s2">ok </span><span class="s0">:= </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]]; </span><span class="s2">ok </span><span class="s0">{ 
+            </span><span class="s2">key</span><span class="s0">++; 
+            </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]]=</span><span class="s2">key</span><span class="s0">; 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] = </span><span class="s5">1</span><span class="s0">; 
+        } 
+    } 
+} 
+</span><span class="s4">//check if current docID is listed in value. if yes -&gt; do nothing. if no, add docID to list and increment counter by 1</span><span class="s0"> 
+</span><span class="s1">func </span><span class="s2">updateDFMap</span><span class="s0">(</span><span class="s2">docID int</span><span class="s0">,</span><span class="s2">text </span><span class="s0">[]</span><span class="s2">string</span><span class="s0">, </span><span class="s2">wordMap </span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">][]</span><span class="s2">int</span><span class="s0">){ 
+    </span><span class="s1">for </span><span class="s2">j </span><span class="s0">:= </span><span class="s5">0</span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">text</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+        </span><span class="s1">if </span><span class="s2">key</span><span class="s0">, </span><span class="s2">ok </span><span class="s0">:= </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]]; </span><span class="s2">ok </span><span class="s0">{    </span><span class="s4">//check if word exists in the map</span><span class="s0"> 
+            </span><span class="s2">docPresence </span><span class="s0">:= </span><span class="s2">false                </span><span class="s4">// default set boolean to false</span><span class="s0"> 
+            </span><span class="s1">for </span><span class="s2">i</span><span class="s0">:= </span><span class="s5">0</span><span class="s0">; </span><span class="s2">i</span><span class="s0">&lt;</span><span class="s2">len</span><span class="s0">(</span><span class="s2">key</span><span class="s0">) ; </span><span class="s2">i</span><span class="s0">++ { 
+                </span><span class="s1">if </span><span class="s2">docID </span><span class="s0">== </span><span class="s2">key</span><span class="s0">[</span><span class="s2">i</span><span class="s0">] {            </span><span class="s4">//if docID exists in list already, set boolean to true</span><span class="s0"> 
+                    </span><span class="s2">docPresence </span><span class="s0">= </span><span class="s2">true</span><span class="s0">; 
+                } 
+            } 
+            </span><span class="s1">if </span><span class="s2">docPresence </span><span class="s0">== </span><span class="s2">false </span><span class="s0">{           </span><span class="s4">//if docID does not exist in list, append value to include docID</span><span class="s0"> 
+                </span><span class="s2">key </span><span class="s0">= </span><span class="s2">Extend</span><span class="s0">(</span><span class="s2">key</span><span class="s0">, </span><span class="s2">docID</span><span class="s0">) 
+                </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] = </span><span class="s2">key</span><span class="s0"> 
+            } 
+        }</span><span class="s1">else </span><span class="s0">{ 
+            </span><span class="s2">keyToAdd </span><span class="s0">:= []</span><span class="s2">int</span><span class="s0">{</span><span class="s2">docID</span><span class="s0">}        </span><span class="s4">//if word doesn't exist in map, add word : docID</span><span class="s0"> 
+            </span><span class="s2">wordMap</span><span class="s0">[</span><span class="s2">text</span><span class="s0">[</span><span class="s2">j</span><span class="s0">]] = </span><span class="s2">keyToAdd</span><span class="s0"> 
+        } 
+    } 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">Extend</span><span class="s0">(</span><span class="s2">slice </span><span class="s0">[]</span><span class="s2">int</span><span class="s0">, </span><span class="s2">element int</span><span class="s0">) []</span><span class="s2">int </span><span class="s0">{ 
+    </span><span class="s2">n </span><span class="s0">:= </span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">) 
+    </span><span class="s1">if </span><span class="s2">n </span><span class="s0">== </span><span class="s2">cap</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">) { 
+        </span><span class="s2">newSlice </span><span class="s0">:= </span><span class="s2">make</span><span class="s0">([]</span><span class="s2">int</span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">), </span><span class="s5">2</span><span class="s0">*</span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">)+</span><span class="s5">1</span><span class="s0">) 
+        </span><span class="s2">copy</span><span class="s0">(</span><span class="s2">newSlice</span><span class="s0">, </span><span class="s2">slice</span><span class="s0">) 
+        </span><span class="s2">slice </span><span class="s0">= </span><span class="s2">newSlice</span><span class="s0"> 
+    } 
+    </span><span class="s2">slice </span><span class="s0">= </span><span class="s2">slice</span><span class="s0">[</span><span class="s5">0 </span><span class="s6">: </span><span class="s2">n</span><span class="s0">+</span><span class="s5">1</span><span class="s0">] 
+    </span><span class="s2">slice</span><span class="s0">[</span><span class="s2">n</span><span class="s0">] = </span><span class="s2">element</span><span class="s0"> 
+    </span><span class="s1">return </span><span class="s2">slice</span><span class="s0"> 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">createReverseMap </span><span class="s0">(</span><span class="s2">inputMap </span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">]</span><span class="s2">int</span><span class="s0">), </span><span class="s2">outputMap </span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">btree</span><span class="s0">.</span><span class="s2">Item</span><span class="s0">][]</span><span class="s2">string</span><span class="s0">)){ 
+    </span><span class="s1">for </span><span class="s2">keyContent</span><span class="s0">, </span><span class="s2">valueContent </span><span class="s0">:= </span><span class="s1">range </span><span class="s2">inputMap</span><span class="s0">{ 
+        </span><span class="s2">revKey </span><span class="s0">:= </span><span class="s2">btree</span><span class="s0">.</span><span class="s2">Int</span><span class="s0">(</span><span class="s2">valueContent</span><span class="s0">) 
+        </span><span class="s2">revValue </span><span class="s0">:= </span><span class="s2">keyContent</span><span class="s0"> 
+        </span><span class="s1">if </span><span class="s2">key</span><span class="s0">, </span><span class="s2">ok </span><span class="s0">:= </span><span class="s2">outputMap</span><span class="s0">[</span><span class="s2">revKey</span><span class="s0">]; </span><span class="s2">ok </span><span class="s0">{ </span><span class="s4">//if frequency number exists in map</span><span class="s0"> 
+            </span><span class="s2">newValue </span><span class="s0">:= </span><span class="s2">ExtendString</span><span class="s0">(</span><span class="s2">key</span><span class="s0">, </span><span class="s2">revValue</span><span class="s0">) 
+            </span><span class="s2">outputMap</span><span class="s0">[</span><span class="s2">revKey</span><span class="s0">] = </span><span class="s2">newValue</span><span class="s0"> 
+        }</span><span class="s1">else</span><span class="s0">{ 
+            </span><span class="s2">outputMap</span><span class="s0">[</span><span class="s2">revKey</span><span class="s0">] = []</span><span class="s2">string</span><span class="s0">{</span><span class="s2">revValue</span><span class="s0">} 
+        } 
+    } 
+    </span><span class="s1">return</span><span class="s0"> 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">ExtendString</span><span class="s0">(</span><span class="s2">slice </span><span class="s0">[]</span><span class="s2">string</span><span class="s0">, </span><span class="s2">element string</span><span class="s0">) []</span><span class="s2">string </span><span class="s0">{ 
+    </span><span class="s2">n </span><span class="s0">:= </span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">) 
+    </span><span class="s1">if </span><span class="s2">n </span><span class="s0">== </span><span class="s2">cap</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">) { 
+        </span><span class="s2">newSlice </span><span class="s0">:= </span><span class="s2">make</span><span class="s0">([]</span><span class="s2">string</span><span class="s0">, </span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">), </span><span class="s5">2</span><span class="s0">*</span><span class="s2">len</span><span class="s0">(</span><span class="s2">slice</span><span class="s0">)+</span><span class="s5">1</span><span class="s0">) 
+        </span><span class="s2">copy</span><span class="s0">(</span><span class="s2">newSlice</span><span class="s0">, </span><span class="s2">slice</span><span class="s0">) 
+        </span><span class="s2">slice </span><span class="s0">= </span><span class="s2">newSlice</span><span class="s0"> 
+    } 
+    </span><span class="s2">slice </span><span class="s0">= </span><span class="s2">slice</span><span class="s0">[</span><span class="s5">0 </span><span class="s6">: </span><span class="s2">n</span><span class="s0">+</span><span class="s5">1</span><span class="s0">] 
+    </span><span class="s2">slice</span><span class="s0">[</span><span class="s2">n</span><span class="s0">] = </span><span class="s2">element</span><span class="s0"> 
+    </span><span class="s1">return </span><span class="s2">slice</span><span class="s0"> 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">updateTree</span><span class="s0">(</span><span class="s2">inputMap </span><span class="s0">(</span><span class="s1">map</span><span class="s0">[</span><span class="s2">btree</span><span class="s0">.</span><span class="s2">Item</span><span class="s0">][]</span><span class="s2">string</span><span class="s0">)) { 
+    </span><span class="s1">for </span><span class="s2">keyContent</span><span class="s0">, </span><span class="s2">_ </span><span class="s0">:= </span><span class="s1">range </span><span class="s2">inputMap</span><span class="s0">{ 
+        </span><span class="s2">nodeToAdd </span><span class="s0">:= </span><span class="s2">btree</span><span class="s0">.</span><span class="s2">Item</span><span class="s0">(</span><span class="s2">keyContent</span><span class="s0">) 
+        </span><span class="s2">tree</span><span class="s0">.</span><span class="s2">ReplaceOrInsert</span><span class="s0">(</span><span class="s2">nodeToAdd</span><span class="s0">) 
+    } 
+    </span><span class="s1">return</span><span class="s0"> 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">WordsInDoc</span><span class="s0">(</span><span class="s2">docNum int </span><span class="s0">,  </span><span class="s2">arrayDocs </span><span class="s0">[]</span><span class="s2">string</span><span class="s0">) </span><span class="s2">int</span><span class="s0">{ 
+    </span><span class="s2">tempArray </span><span class="s0">:= </span><span class="s2">s</span><span class="s0">.</span><span class="s2">Split</span><span class="s0">(</span><span class="s2">arrayDocs</span><span class="s0">[</span><span class="s2">docNum</span><span class="s0">] , </span><span class="s3">&quot; &quot;</span><span class="s0">) 
+    </span><span class="s1">return </span><span class="s2">len</span><span class="s0">(</span><span class="s2">tempArray</span><span class="s0">) 
+} 
+ 
+</span><span class="s1">func </span><span class="s2">UniqueWordsInDoc </span><span class="s0">(</span><span class="s2">docNum int</span><span class="s0">, </span><span class="s2">DFmap </span><span class="s1">map</span><span class="s0">[</span><span class="s2">string</span><span class="s0">][]</span><span class="s2">int</span><span class="s0">) </span><span class="s2">int</span><span class="s0">{ 
+    </span><span class="s2">output </span><span class="s0">:= </span><span class="s5">0</span><span class="s0"> 
+    </span><span class="s1">for </span><span class="s2">_</span><span class="s0">, </span><span class="s2">valueContent </span><span class="s0">:= </span><span class="s1">range </span><span class="s2">DFmap</span><span class="s0">{ 
+        </span><span class="s1">for </span><span class="s2">j </span><span class="s0">:= </span><span class="s5">0 </span><span class="s0">; </span><span class="s2">j </span><span class="s0">&lt; </span><span class="s2">len</span><span class="s0">(</span><span class="s2">valueContent</span><span class="s0">) ; </span><span class="s2">j</span><span class="s0">++ { 
+            </span><span class="s1">if </span><span class="s2">valueContent</span><span class="s0">[</span><span class="s2">j</span><span class="s0">] == </span><span class="s2">docNum </span><span class="s0">{ 
+                </span><span class="s2">output</span><span class="s0">++ 
+            } 
+        } 
+    } 
+    </span><span class="s1">return </span><span class="s2">output</span><span class="s0"> 
+}</span></pre>
+</body>
+</html>

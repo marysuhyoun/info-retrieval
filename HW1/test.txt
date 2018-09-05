@@ -1,0 +1,11 @@
+<P ID=1>
+TEST.!?: bunny rabbit dog!()
+</P>
+
+<P ID=2>
+TEST 2TEST golf rabbit 
+</P>
+
+<P ID=3>
+TEST 2TEST bunny blah 
+</P>
