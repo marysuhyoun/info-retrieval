@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -223,6 +222,7 @@ func FileToLines(filePath string, inputCFMap map[string]int , inputDFMap map[str
 
 func RemovePunct(lineContent string) (cleanedLine string){
 	lineContent = s.Replace(lineContent,".", "",-1)
+	lineContent = s.Replace(lineContent,"-", " ",-1)
 	lineContent = s.Replace(lineContent,",", "",-1)
 	lineContent = s.Replace(lineContent,"?", "",-1)
 	lineContent = s.Replace(lineContent,";", "",-1)
@@ -233,6 +233,12 @@ func RemovePunct(lineContent string) (cleanedLine string){
 	lineContent = s.Replace(lineContent,"]", "",-1)
 	lineContent = s.Replace(lineContent,"{", "",-1)
 	lineContent = s.Replace(lineContent,"}", "",-1)
+	lineContent = s.Replace(lineContent,"=", "",-1)
+	lineContent = s.Replace(lineContent,"_", "",-1)
+	lineContent = s.Replace(lineContent,"+", "",-1)
+	lineContent = s.Replace(lineContent,"$", "",-1)
+	lineContent = s.Replace(lineContent,"#", "",-1)
+	lineContent = s.Replace(lineContent,"@", " ",0 )
 	lineContent = s.Replace(lineContent,"|", "",-1)
 	lineContent = s.Replace(lineContent,"\\n", "",-1)
 	lineContent = s.Replace(lineContent,"- ", " ",-2)
@@ -241,9 +247,11 @@ func RemovePunct(lineContent string) (cleanedLine string){
 	lineContent = s.Replace(lineContent,"'m", "",-2)
 	lineContent = s.Replace(lineContent,"'re", "",-3)
 	lineContent = s.Replace(lineContent,"'ed", "",-3)
+	lineContent = s.Replace(lineContent,"'", "",-1)
 	lineContent = s.Replace(lineContent,"  ", " ",-1)
 	lineContent = s.Replace(lineContent,"  ", " ",-1)
-	cleanedLine = s.Replace(lineContent,"!", "",-1)
+	lineContent = s.Replace(lineContent,"!", "",-1)
+	lineContent = s.Replace(lineContent,":", "",-1)
 	return
 }
 
