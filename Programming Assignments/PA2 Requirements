@@ -1,0 +1,19 @@
+Requirements:
+inverted file structure must be written to disk as a binary file
+your dictionary must be written to disk
+for each word in the lexicon you must store a file offset to the corresponding on-disk posting list
+you should process the source text file only once
+
+docids are the ID fields in the <P> tags of the corpus
+Read input file and write out word, docID, #times in that doc
+Sorting order
+    1. By Term
+    2. By docID
+write out the sorted entries as an inverted file
+
+Step 1. Scan
+Step 2. Create docID in segments
+Step 3. Merge segments
+
+docID : 4 bytes
+document term frequency : 4 bytes
